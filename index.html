@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="referrer" content="no-referrer">
+    <title>FIB Bodycam Commands</title>
+    <link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@700&family=VT323&family=Rajdhani:wght@600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #0d1117;
+            --box-bg: #161b22;
+            --item-bg: #0d1117;
+            --primary-accent: #5e6ad2; 
+            --primary-hover: #4b55a8;
+            --success: #238636;
+            --text-main: #c9d1d9; 
+            --text-muted: #8b949e;
+            --border-color: #30363d;
+            --warning-bg: rgba(210, 153, 34, 0.1);
+            --warning-border: #d29922;
+            --header-color: #b4c4ff; 
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            font-family: 'Rajdhani', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 50px 20px;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* --- Page Load Animations --- */
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(40px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .video-header {
+            text-align: center;
+            margin-bottom: 50px;
+            position: relative;
+            animation: fadeInDown 0.8s ease-out forwards;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 950px;
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+            opacity: 0;
+            animation: fadeInUp 0.8s ease-out 0.2s forwards;
+        }
+
+        .fib-seal {
+            width: 130px; 
+            height: 130px;
+            margin: 0 auto 20px;
+            display: block;
+            object-fit: contain;
+            filter: drop-shadow(0 0 15px rgba(180, 196, 255, 0.5)); 
+            transition: filter 0.3s ease, transform 0.3s ease;
+            border-radius: 50%;
+        }
+
+        .fib-seal:hover {
+            filter: drop-shadow(0 0 25px rgba(180, 196, 255, 0.8)); 
+            transform: scale(1.05);
+        }
+
+        .video-header-title {
+            font-family: 'Syncopate', sans-serif; 
+            font-size: 3.5rem;
+            letter-spacing: 3px;
+            color: var(--header-color); 
+            text-shadow: 0 0 15px rgba(180, 196, 255, 0.4);
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+
+        .video-header-author-box {
+            display: inline-block;
+            padding: 5px 12px;
+            border: 1px solid rgba(180, 196, 255, 0.2);
+            border-radius: 4px;
+            color: var(--header-color);
+            font-size: 1rem;
+            font-family: 'VT323', monospace; 
+            margin-top: 10px;
+            opacity: 0.8;
+            text-transform: uppercase;
+        }
+
+        .section-box {
+            background-color: var(--box-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .section-box:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+        }
+
+        .custom-pro-commands {
+            border: 1px solid rgba(180, 196, 255, 0.3);
+            box-shadow: 0 0 15px rgba(180, 196, 255, 0.1);
+            margin-bottom: 10px;
+        }
+
+        .custom-pro-title {
+            color: #ffffff !important;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.4);
+            letter-spacing: 2px !important;
+            justify-content: center;
+        }
+
+        .section-title {
+            font-family: 'Rajdhani', sans-serif; 
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: var(--header-color); 
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* --- Box Flash Animation --- */
+        @keyframes borderFlash {
+            0% { border-color: var(--border-color); box-shadow: none; }
+            10% { border-color: var(--success); box-shadow: inset 0 0 20px rgba(35, 134, 54, 0.3), 0 0 10px rgba(35, 134, 54, 0.2); }
+            100% { border-color: var(--border-color); box-shadow: none; }
+        }
+
+        .command-item {
+            background-color: var(--item-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 12px 18px;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.2s ease;
+        }
+
+        .command-item:hover {
+            border-color: var(--primary-accent);
+            background-color: #11151d;
+        }
+
+        .command-item.success-flash {
+            animation: borderFlash 1.5s ease-out;
+            background-color: rgba(35, 134, 54, 0.05);
+        }
+
+        .command-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .command-text {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.95rem;
+            color: #e6edf3;
+            word-break: break-word;
+            padding-right: 20px;
+        }
+
+        /* --- Button Pulse Animation --- */
+        @keyframes pulseGlow {
+            0% { box-shadow: 0 0 0 0 rgba(35, 134, 54, 0.7); }
+            70% { box-shadow: 0 0 0 15px rgba(35, 134, 54, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(35, 134, 54, 0); }
+        }
+
+        .copy-btn {
+            background-color: var(--primary-accent);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 8px 25px;
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 700;
+            font-size: 1.1rem;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+            min-width: 100px;
+            text-align: center;
+            text-transform: uppercase;
+            position: relative;
+        }
+
+        .copy-btn:hover {
+            background-color: var(--primary-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(94, 106, 210, 0.4);
+        }
+
+        .copy-btn:active {
+            transform: translateY(1px) scale(0.95);
+            box-shadow: 0 2px 5px rgba(94, 106, 210, 0.4);
+        }
+
+        .copy-btn.copied {
+            background-color: var(--success) !important;
+            animation: pulseGlow 0.6s ease-out;
+            transform: translateY(0) scale(0.95);
+            pointer-events: none; 
+        }
+
+        .warning-box {
+            background-color: var(--warning-bg);
+            border-left: 4px solid var(--warning-border);
+            color: #e5c07b;
+            padding: 12px 15px;
+            font-size: 1rem;
+            margin-bottom: 15px;
+            border-radius: 0 4px 4px 0;
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 600;
+        }
+
+        .divider {
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--header-color), transparent);
+            margin: 40px 0;
+            opacity: 0.5;
+            position: relative;
+        }
+        
+        .divider::after {
+            content: "ORIGINAL FIB COMMANDS";
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--bg-dark);
+            padding: 0 15px;
+            color: var(--header-color);
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-shadow: 0 0 10px rgba(180, 196, 255, 0.3);
+        }
+
+        @media (max-width: 650px) {
+            .command-item {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 12px;
+            }
+            .command-text {
+                padding-right: 0;
+            }
+            .video-header-title {
+                font-size: 2.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="video-header">
+        
+        <img src="https://i.postimg.cc/pdc3hvkZ/Screenshot-2026-03-09-135609.png" alt="FIB Logo" class="fib-seal">
+
+        <h1 class="video-header-title">FIB BODYCAM COMMANDS</h1>
+        <div class="video-header-author-box">MADE BY Prem Riviera</div>
+    </div>
+
+    <div class="container">
+        
+        <div class="section-box custom-pro-commands">
+            <div class="section-title custom-pro-title">
+                GRAND PRO COMMANDS
+            </div>
+
+            <div class="section-title">
+                💾 Saving Bodycam
+            </div>
+            <div class="command-item">
+                <span class="command-text">/me saves bodycam, uploads it to the FIB Cloud and continues recording</span>
+                <button class="copy-btn" onclick="copyCommand(this)">COPY</button>
+            </div>
+            <div class="command-item">
+                <span class="command-text">/do It is recording</span>
+                <button class="copy-btn" onclick="copyCommand(this)">COPY</button>
+            </div>
+
+            <div class="section-title">
+                ⚖️ Lawyer
+            </div>
+            <div class="command-item">
+                <span class="command-text">/me Saving Bodycam in SD card, ejects it and passing it to the lawyer</span>
+                <button class="copy-btn" onclick="copyCommand(this)">COPY</button>
+            </div>
+
+            <div class="section-title">
+                🏁 Finishing Shift
+            </div>
+            <div class="command-item">
+                <span class="command-text">/me saving bodycam in SD card, ejects it and keeping it safe</span>
+                <button class="copy-btn" onclick="copyCommand(this)">COPY</button>
+            </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="section-box">
+            <div class="section-title">
+                📹 Attaching Bodycam (Uniform)
+            </div>
+            <div class="command-item">
+                <span class="command-text">/me takes out bodycam, attaches it to chest, checks its ballistic, water proof</span>
+                <button class="copy-btn" onclick="copyCommand(this)">COPY</button>
+            </div>
+            <div class="command-item">
+                <span class="command-text">/me makes sure it is recording and checks for the red light</span>
+                <button class="copy-btn" onclick="copyCommand(this)">COPY</button>
+            </div>
+            <div class="command-item">
+                <span class="command-text">/do It is recording, is ballistic and water proof</span>
+                <button class="copy-btn" onclick="copyCommand(this)">COPY</button>
+            </div>
+            <div class="command-item">
+                <span class="command-text">/me connects PDA to the nearest cell tower</span>
+                <button class="copy-btn" onclick="copyCommand(this)">COPY</button>
+            </div>
+        </div>
+
+        <div class="section-box">
+            <div class="section-title">
+                📹 While Undercover
+            </div>
+            <div class="command-item">
+                <span class="command-text">/me takes out bodycam and attaches it to belt, hides it, checks its ballistic and water proof</span>
+                <button class="copy-btn" onclick="copyCommand(this)">COPY</button>
+            </div>
+            <div class="command-item">
+                <span class="command-text">/do It is recording, is ballistic and water proof</span>
+                <button class="copy-btn" onclick="copyCommand(this)">COPY</button>
+            </div>
+            <div class="command-item">
+                <span class="command-text">/me connects PDA to the nearest cell tower</span>
+                <button class="copy-btn" onclick="copyCommand(this)">COPY</button>
+            </div>
+        </div>
+
+        <div class="section-box">
+            <div class="section-title">
+                🔄 Refreshing Bodycam
+            </div>
+            <div class="warning-box">
+                ⚠️ First, turn on the bodycam (or screen recording software), then type the command while making sure you are clearly visible in the recording as you do it.
+            </div>
+            <div class="command-item">
+                <span class="command-text">/me refreshing bodycam</span>
+                <button class="copy-btn" onclick="copyCommand(this)">COPY</button>
+            </div>
+            <div class="command-item">
+                <span class="command-text">/do It is recording</span>
+                <button class="copy-btn" onclick="copyCommand(this)">COPY</button>
+            </div>
+        </div>
+
+        <div class="section-box">
+            <div class="section-title">
+                💾 Saving Bodycam (Original)
+            </div>
+            <div class="command-item">
+                <span class="command-text">/me saves bodycam, uploads it to the FIB Cloud and continues recording</span>
+                <button class="copy-btn" onclick="copyCommand(this)">COPY</button>
+            </div>
+            <div class="command-item">
+                <span class="command-text">/do It is recording</span>
+                <button class="copy-btn" onclick="copyCommand(this)">COPY</button>
+            </div>
+        </div>
+
+        <div class="section-box">
+            <div class="section-title">
+                🧥 Taking Jumpsuit from Bench
+            </div>
+            <div class="warning-box">
+                ⚠️ Don't forget to put the actual size that fits in RP instead of XYZ.
+            </div>
+            <div class="command-item">
+                <span class="command-text">/me takes the XYZ size Jumpsuit from the Bench</span>
+                <button class="copy-btn" onclick="copyCommand(this)">COPY</button>
+            </div>
+            <div class="command-item">
+                <span class="command-text">/me places the Jumpsuit on the Bed</span>
+                <button class="copy-btn" onclick="copyCommand(this)">COPY</button>
+            </div>
+        </div>
+
+        <div class="section-box">
+            <div class="section-title">
+                🚁 Drone Commands (Work Uniform)
+            </div>
+            <div class="command-item">
+                <span class="command-text">/me launches the FIB Drone</span>
+                <button class="copy-btn" onclick="copyCommand(this)">COPY</button>
+            </div>
+            <div class="command-item">
+                <span class="command-text">/me takes the FIB Drone from the Ground and put it back in backpack</span>
+                <button class="copy-btn" onclick="copyCommand(this)">COPY</button>
+            </div>
+        </div>
+
+        <div class="section-box">
+            <div class="section-title">
+                🚁 Drone Commands (Undercover)
+            </div>
+            <div class="command-item">
+                <span class="command-text">/me takes the FIB drone from the trunk and puts it in the backpack</span>
+                <button class="copy-btn" onclick="copyCommand(this)">COPY</button>
+            </div>
+            <div class="command-item">
+                <span class="command-text">/me takes the FIB drone from the backpack and launches it</span>
+                <button class="copy-btn" onclick="copyCommand(this)">COPY</button>
+            </div>
+            <div class="command-item">
+                <span class="command-text">/me takes the FIB drone from the ground and puts it in the trunk</span>
+                <button class="copy-btn" onclick="copyCommand(this)">COPY</button>
+            </div>
+        </div>
+
+        <div class="section-box">
+            <div class="section-title">
+                ⚖️ Handing Footage to the Lawyer
+            </div>
+            <div class="command-item">
+                <span class="command-text">/me saves bodycam contents onto an SD card and uploads contents to FIB servers</span>
+                <button class="copy-btn" onclick="copyCommand(this)">COPY</button>
+            </div>
+            <div class="command-item">
+                <span class="command-text">/me takes SD card out of the bodycam and hands it to the lawyer</span>
+                <button class="copy-btn" onclick="copyCommand(this)">COPY</button>
+            </div>
+        </div>
+
+        <div class="section-box">
+            <div class="section-title">
+                🏁 Finishing Your Shift
+            </div>
+            <div class="command-item">
+                <span class="command-text">/me saves bodycam contents onto an SD card and uploads contents to FIB servers</span>
+                <button class="copy-btn" onclick="copyCommand(this)">COPY</button>
+            </div>
+            <div class="command-item">
+                <span class="command-text">/me puts the badge in the locker</span>
+                <button class="copy-btn" onclick="copyCommand(this)">COPY</button>
+            </div>
+        </div>
+
+        <div class="section-box">
+            <div class="section-title">
+                🔍 Searching a Trunk
+            </div>
+            <div class="command-item">
+                <span class="command-text">/me carefully inspects the trunk and uses a crowbar to attempt opening it</span>
+                <button class="copy-btn" onclick="copyCommand(this)">COPY</button>
+            </div>
+            <div class="command-item">
+                <span class="command-text">/me applies pressure with the crowbar to force the trunk open</span>
+                <button class="copy-btn" onclick="copyCommand(this)">COPY</button>
+            </div>
+        </div>
+
+        <div class="section-box">
+            <div class="section-title">
+                🕵️ Taking Evidence
+            </div>
+            <div class="command-item">
+                <span class="command-text">/me feels the edges of the vehicle for VIN and checks for ownership</span>
+                <button class="copy-btn" onclick="copyCommand(this)">COPY</button>
+            </div>
+        </div>
+
+        <div class="section-box">
+            <div class="section-title">
+                🕵️ When License Plate of Bike Not Visible
+            </div>
+            <div class="warning-box">
+                ⚠️ Then flex E muscle and see the vehicle information.
+            </div>
+            <div class="command-item">
+                <span class="command-text">/me checks the VIN from the steering neck of the bike and checks for ownership</span>
+                <button class="copy-btn" onclick="copyCommand(this)">COPY</button>
+            </div>
+        </div>
+
+        <div class="section-box">
+            <div class="section-title">
+                📡 Department Messages (DOJ Related)
+            </div>
+            <div class="command-item"><span class="command-text">FIB to DOJ: How copy?</span><button class="copy-btn" onclick="copyCommand(this)">COPY</button></div>
+            <div class="command-item"><span class="command-text">FIB to DOJ: Good copy, send traffic!</span><button class="copy-btn" onclick="copyCommand(this)">COPY</button></div>
+            <div class="command-item"><span class="command-text">FIB to DOJ: Bad copy!</span><button class="copy-btn" onclick="copyCommand(this)">COPY</button></div>
+            <div class="command-item"><span class="command-text">FIB to DOJ: Bad copy, we're currently in a situation!</span><button class="copy-btn" onclick="copyCommand(this)">COPY</button></div>
+            <div class="command-item"><span class="command-text">FIB to DOJ: We have a 10-15 at DOC requesting a lawyer, Are there any available?</span><button class="copy-btn" onclick="copyCommand(this)">COPY</button></div>
+            <div class="command-item"><span class="command-text">FIB to DOJ: 10-4, much appreciated!</span><button class="copy-btn" onclick="copyCommand(this)">COPY</button></div>
+        </div>
+
+        <div class="section-box">
+            <div class="section-title">
+                👮 LSPD Related
+            </div>
+            <div class="command-item"><span class="command-text">FIB to LSPD: How copy?</span><button class="copy-btn" onclick="copyCommand(this)">COPY</button></div>
+            <div class="command-item"><span class="command-text">FIB to LSPD: Good copy, send traffic!</span><button class="copy-btn" onclick="copyCommand(this)">COPY</button></div>
+            <div class="command-item"><span class="command-text">FIB to LSPD: Bad copy!</span><button class="copy-btn" onclick="copyCommand(this)">COPY</button></div>
+            <div class="command-item"><span class="command-text">FIB to LSPD: Bad copy, we're currently in a situation!</span><button class="copy-btn" onclick="copyCommand(this)">COPY</button></div>
+            <div class="command-item"><span class="command-text">FIB to LSPD: Can we have a quick meeting at your HQ?</span><button class="copy-btn" onclick="copyCommand(this)">COPY</button></div>
+            <div class="command-item"><span class="command-text">FIB to LSPD: Requesting permission to land at your helipad</span><button class="copy-btn" onclick="copyCommand(this)">COPY</button></div>
+            <div class="command-item"><span class="command-text">FIB to LSPD: We are entering your jurisdiction in chase of a car hijacker, help would be appreciated</span><button class="copy-btn" onclick="copyCommand(this)">COPY</button></div>
+            <div class="command-item"><span class="command-text">FIB to LSPD: We have one of your units in custody, could you 10-17 to DOC?</span><button class="copy-btn" onclick="copyCommand(this)">COPY</button></div>
+            <div class="command-item"><span class="command-text">FIB to LSPD: We're currently enroute!</span><button class="copy-btn" onclick="copyCommand(this)">COPY</button></div>
+            <div class="command-item"><span class="command-text">FIB to LSPD: Troopers enroute!</span><button class="copy-btn" onclick="copyCommand(this)">COPY</button></div>
+            <div class="command-item"><span class="command-text">FIB to LSPD: 10-4, much appreciated!</span><button class="copy-btn" onclick="copyCommand(this)">COPY</button></div>
+            <div class="command-item"><span class="command-text">FIB to LSPD: Permission Granted!</span><button class="copy-btn" onclick="copyCommand(this)">COPY</button></div>
+        </div>
+
+        <div class="section-box">
+            <div class="section-title">
+                🚓 SAHP Related
+            </div>
+            <div class="command-item"><span class="command-text">FIB to SAHP: How copy?</span><button class="copy-btn" onclick="copyCommand(this)">COPY</button></div>
+            <div class="command-item"><span class="command-text">FIB to SAHP: Good copy, send traffic!</span><button class="copy-btn" onclick="copyCommand(this)">COPY</button></div>
+            <div class="command-item"><span class="command-text">FIB to SAHP: Bad copy!</span><button class="copy-btn" onclick="copyCommand(this)">COPY</button></div>
+            <div class="command-item"><span class="command-text">FIB to SAHP: Bad copy, we're currently in a situation!</span><button class="copy-btn" onclick="copyCommand(this)">COPY</button></div>
+            <div class="command-item"><span class="command-text">FIB to SAHP: Can we have a quick meeting at your HQ?</span><button class="copy-btn" onclick="copyCommand(this)">COPY</button></div>
+            <div class="command-item"><span class="command-text">FIB to SAHP: Requesting permission to land at your helipad</span><button class="copy-btn" onclick="copyCommand(this)">COPY</button></div>
+            <div class="command-item"><span class="command-text">FIB to SAHP: We are entering your jurisdiction in chase of a car hijacker, help would be appreciated</span><button class="copy-btn" onclick="copyCommand(this)">COPY</button></div>
+            <div class="command-item"><span class="command-text">FIB to SAHP: We have one of your agents in custody, could you 10-17 to DOC?</span><button class="copy-btn" onclick="copyCommand(this)">COPY</button></div>
+            <div class="command-item"><span class="command-text">FIB to SAHP: Troopers enroute!</span><button class="copy-btn" onclick="copyCommand(this)">COPY</button></div>
+            <div class="command-item"><span class="command-text">FIB to SAHP: 10-4, much appreciated!</span><button class="copy-btn" onclick="copyCommand(this)">COPY</button></div>
+            <div class="command-item"><span class="command-text">FIB to SAHP: Permission Granted!</span><button class="copy-btn" onclick="copyCommand(this)">COPY</button></div>
+        </div>
+
+        <div class="section-box">
+            <div class="section-title">
+                🪖 NG Related
+            </div>
+            <div class="command-item"><span class="command-text">FIB to NG: How copy?</span><button class="copy-btn" onclick="copyCommand(this)">COPY</button></div>
+            <div class="command-item"><span class="command-text">FIB to NG: Good copy, send traffic!</span><button class="copy-btn" onclick="copyCommand(this)">COPY</button></div>
+            <div class="command-item"><span class="command-text">FIB to NG: Bad copy!</span><button class="copy-btn" onclick="copyCommand(this)">COPY</button></div>
+            <div class="command-item"><span class="command-text">FIB to NG: Bad copy, we're currently in a situation!</span><button class="copy-btn" onclick="copyCommand(this)">COPY</button></div>
+            <div class="command-item"><span class="command-text">FIB to NG: Can we have a quick meeting at your main barracks?</span><button class="copy-btn" onclick="copyCommand(this)">COPY</button></div>
+            <div class="command-item"><span class="command-text">FIB to NG: Requesting permission to land at main barracks.</span><button class="copy-btn" onclick="copyCommand(this)">COPY</button></div>
+            <div class="command-item"><span class="command-text">FIB to NG: We have one of your soldiers in custody, could you 10-17 to DOC?</span><button class="copy-btn" onclick="copyCommand(this)">COPY</button></div>
+            <div class="command-item"><span class="command-text">FIB to NG: We're currently enroute!</span><button class="copy-btn" onclick="copyCommand(this)">COPY</button></div>
+            <div class="command-item"><span class="command-text">FIB to NG: 10-4, much appreciated!</span><button class="copy-btn" onclick="copyCommand(this)">COPY</button></div>
+            <div class="command-item"><span class="command-text">FIB to NG: Permission Granted!</span><button class="copy-btn" onclick="copyCommand(this)">COPY</button></div>
+        </div>
+
+        <div class="section-box">
+            <div class="section-title">
+                🚑 EMS Related
+            </div>
+            <div class="command-item"><span class="command-text">FIB to EMS: How copy?</span><button class="copy-btn" onclick="copyCommand(this)">COPY</button></div>
+            <div class="command-item"><span class="command-text">FIB to EMS: Good copy, send traffic!</span><button class="copy-btn" onclick="copyCommand(this)">COPY</button></div>
+            <div class="command-item"><span class="command-text">FIB to EMS: Bad copy!</span><button class="copy-btn" onclick="copyCommand(this)">COPY</button></div>
+            <div class="command-item"><span class="command-text">FIB to EMS: Bad copy, we're currently in a situation!</span><button class="copy-btn" onclick="copyCommand(this)">COPY</button></div>
+            <div class="command-item"><span class="command-text">FIB to EMS: Ghetto is off limits for the next 15 minutes, please inform all your units</span><button class="copy-btn" onclick="copyCommand(this)">COPY</button></div>
+            <div class="command-item"><span class="command-text">FIB to EMS: Can we have a quick meeting at Pillbox Hospital?</span><button class="copy-btn" onclick="copyCommand(this)">COPY</button></div>
+            <div class="command-item"><span class="command-text">FIB to EMS: Requesting permission to land at your helipad.</span><button class="copy-btn" onclick="copyCommand(this)">COPY</button></div>
+            <div class="command-item"><span class="command-text">FIB to EMS: We have one of your employees in custody, could you 10-17 to DOC?</span><button class="copy-btn" onclick="copyCommand(this)">COPY</button></div>
+            <div class="command-item"><span class="command-text">FIB to EMS: We're currently enroute!</span><button class="copy-btn" onclick="copyCommand(this)">COPY</button></div>
+            <div class="command-item"><span class="command-text">FIB to EMS: Clear!</span><button class="copy-btn" onclick="copyCommand(this)">COPY</button></div>
+            <div class="command-item"><span class="command-text">FIB to EMS: 10-4, much appreciated!</span><button class="copy-btn" onclick="copyCommand(this)">COPY</button></div>
+            <div class="command-item"><span class="command-text">FIB to EMS: Permission Granted!</span><button class="copy-btn" onclick="copyCommand(this)">COPY</button></div>
+        </div>
+
+        <div class="section-box">
+            <div class="section-title">
+                🏛️ Government Related
+            </div>
+            <div class="command-item"><span class="command-text">FIB to GOV: How copy?</span><button class="copy-btn" onclick="copyCommand(this)">COPY</button></div>
+            <div class="command-item"><span class="command-text">FIB to GOV: Good copy, send traffic!</span><button class="copy-btn" onclick="copyCommand(this)">COPY</button></div>
+            <div class="command-item"><span class="command-text">FIB to GOV: Bad copy!</span><button class="copy-btn" onclick="copyCommand(this)">COPY</button></div>
+            <div class="command-item"><span class="command-text">FIB to GOV: Bad copy, we're currently in a situation!</span><button class="copy-btn" onclick="copyCommand(this)">COPY</button></div>
+            <div class="command-item"><span class="command-text">FIB to GOV: We have a quick meeting at capitol?</span><button class="copy-btn" onclick="copyCommand(this)">COPY</button></div>
+            <div class="command-item"><span class="command-text">FIB to GOV: Requesting permission to land on the lawn.</span><button class="copy-btn" onclick="copyCommand(this)">COPY</button></div>
+            <div class="command-item"><span class="command-text">FIB to GOV: We have one of your units in custody, could you 10-17 to DOC?</span><button class="copy-btn" onclick="copyCommand(this)">COPY</button></div>
+            <div class="command-item"><span class="command-text">FIB to GOV: 10-4, much appreciated!</span><button class="copy-btn" onclick="copyCommand(this)">COPY</button></div>
+        </div>
+
+        <div class="section-box">
+            <div class="section-title">
+                🚨 Global Related
+            </div>
+            <div class="command-item"><span class="command-text">FIB to GLOBAL: What's the situation?</span><button class="copy-btn" onclick="copyCommand(this)">COPY</button></div>
+            <div class="command-item"><span class="command-text">FIB to ALL: Global is for Regrouping for latest Store Robbery Please Dispatch Max units</span><button class="copy-btn" onclick="copyCommand(this)">COPY</button></div>
+            <div class="command-item"><span class="command-text">FIB to ALL: Global is for heavy 10-80s, send all available units!</span><button class="copy-btn" onclick="copyCommand(this)">COPY</button></div>
+            <div class="command-item"><span class="command-text">FIB to ALL: Federals is getting robbed at global, send all available units!</span><button class="copy-btn" onclick="copyCommand(this)">COPY</button></div>
+            <div class="command-item"><span class="command-text">FIB to ALL: Global is for a hood watch, send all available units!</span><button class="copy-btn" onclick="copyCommand(this)">COPY</button></div>
+            <div class="command-item"><span class="command-text">FIB to ALL: Global is for a checkpoint, everyone is invited!</span><button class="copy-btn" onclick="copyCommand(this)">COPY</button></div>
+            <div class="command-item"><span class="command-text">FIB to ALL: Be on standby for a possible hostage situation!</span><button class="copy-btn" onclick="copyCommand(this)">COPY</button></div>
+            <div class="command-item"><span class="command-text">FIB to ALL: The Global is 10-98.</span><button class="copy-btn" onclick="copyCommand(this)">COPY</button></div>
+        </div>
+
+    </div>
+
+    <script>
+        function copyCommand(buttonElement) {
+            const commandItem = buttonElement.parentElement;
+            const textToCopy = commandItem.querySelector('.command-text').innerText.trim();
+
+            const fallbackCopyTextToClipboard = (text) => {
+                var textArea = document.createElement("textarea");
+                textArea.value = text;
+                textArea.style.top = "0";
+                textArea.style.left = "0";
+                textArea.style.position = "fixed";
+                textArea.style.opacity = "0";
+
+                document.body.appendChild(textArea);
+                textArea.focus();
+                textArea.select();
+
+                try {
+                    var successful = document.execCommand('copy');
+                    if (successful) {
+                        triggerSuccessAnimation(buttonElement, commandItem);
+                    } else {
+                        buttonElement.innerText = "ERROR";
+                    }
+                } catch (err) {
+                    console.error('Fallback copy failed', err);
+                    buttonElement.innerText = "ERROR";
+                }
+
+                document.body.removeChild(textArea);
+            };
+
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(textToCopy).then(() => {
+                    triggerSuccessAnimation(buttonElement, commandItem);
+                }).catch(() => {
+                    fallbackCopyTextToClipboard(textToCopy);
+                });
+            } else {
+                fallbackCopyTextToClipboard(textToCopy);
+            }
+        }
+
+        function triggerSuccessAnimation(buttonElement, commandItemElement) {
+            const originalText = buttonElement.getAttribute('data-original-text') || "COPY";
+            buttonElement.setAttribute('data-original-text', originalText);
+            
+            buttonElement.innerText = "COPIED!";
+            buttonElement.classList.add("copied");
+
+            commandItemElement.classList.add("success-flash");
+
+            setTimeout(() => {
+                buttonElement.innerText = originalText;
+                buttonElement.classList.remove("copied");
+                commandItemElement.classList.remove("success-flash");
+            }, 1500);
+        }
+    </script>
+</body>
+</html>
